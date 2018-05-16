@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ChooseNextWayPoint.h"
+#include "ChooseNewWayPoint.h"
 
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
@@ -8,7 +8,7 @@
 #include "PatrolRoute.h"
 
 
-EBTNodeResult::Type UChooseNextWayPoint::ExecuteTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory)
+EBTNodeResult::Type UChooseNewWayPoint::ExecuteTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory)
 {
 	auto Blackboard = OwnerComp.GetBlackboardComponent();
 	int32 iIndex = Blackboard->GetValueAsInt(Index.SelectedKeyName);

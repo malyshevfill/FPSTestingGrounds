@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "ChooseNextWayPoint.generated.h"
+#include "ChooseNewWayPoint.generated.h"
 
 /**
  *		Need to be connected AIModule and GameplayTasks in C++ in C# file ProjectName.Build.cs
@@ -13,7 +13,7 @@ PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engi
 
  */
 UCLASS()
-class TESTINGGROUNDS_API UChooseNextWayPoint : public UBTTaskNode
+class TESTINGGROUNDS_API UChooseNewWayPoint : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
