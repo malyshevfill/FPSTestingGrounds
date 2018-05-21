@@ -12,13 +12,13 @@ class TESTINGGROUNDS_API ANPCharacter : public ACharacter
 	GENERATED_BODY()
 
 
-	/** Gun mesh: 3st person view */
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	class USkeletalMeshComponent* TP_Gun;	
+	///** Gun mesh: 3st person view */
+	//UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+	//class USkeletalMeshComponent* TP_Gun;	
 
-	/** Location on gun mesh where projectiles should spawn. */
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-		class USceneComponent* TP_MuzzleLocation;
+	///** Location on gun mesh where projectiles should spawn. */
+	//UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+	//	class USceneComponent* TP_MuzzleLocation;
 
 public:
 	// Sets default values for this character's properties
@@ -30,7 +30,11 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	/** Fires a projectile. */
+
+	class AGunBase* TP_Gun = nullptr;
+
+	/** Delegates Fire action to FP_Gun actor */
+	UFUNCTION(BlueprintCallable, Category = "Gun")
 	void OnFire();
 
 public:	
@@ -48,11 +52,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	TSubclassOf<class AWeaponProjectile> ProjectileClass;
 
-	/** Sound to play each time we fire */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-	class USoundBase* FireSound;
+	///** Sound to play each time we fire */
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	//class USoundBase* FireSound;
 
 	/** AnimMontage to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	class UAnimMontage* FireAnimation;
+
+	/** Projectile class to spawn */
+	UPROPERTY(EditDefaultsOnly, Category = Gun)
+		TSubclassOf<class AGunBase> GunClass;
 };

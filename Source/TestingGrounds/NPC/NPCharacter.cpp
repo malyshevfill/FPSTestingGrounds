@@ -2,6 +2,7 @@
 
 #include "NPCharacter.h"
 
+#include "Weapons/GunBase.h"
 #include "Weapons/WeaponProjectile.h"
 #include "Components/SkeletalMeshComponent.h"
 
@@ -15,20 +16,20 @@ ANPCharacter::ANPCharacter()
 	//PrimaryActorTick.bCanEverTick = true;
 
 	// Create a gun mesh component
-	TP_Gun = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("TP_Gun"));
+	//TP_Gun = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("TP_Gun"));
 	//TP_Gun->SetOnlyOwnerSee(false);			// only the owning player will see this mesh
 	//TP_Gun->bCastDynamicShadow = false;
 	//TP_Gun->CastShadow = false;
 	// FP_Gun->SetupAttachment(Mesh1P, TEXT("GripPoint"));
-	TP_Gun->SetupAttachment(RootComponent);
+	//TP_Gun->SetupAttachment(RootComponent);
 	
 
-	TP_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
-	TP_MuzzleLocation->SetupAttachment(TP_Gun);
-	TP_MuzzleLocation->SetRelativeLocation(FVector(0.2f, 48.4f, -10.6f));
+	//TP_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
+	//TP_MuzzleLocation->SetupAttachment(TP_Gun);
+	//TP_MuzzleLocation->SetRelativeLocation(FVector(0.2f, 48.4f, -10.6f));
 
 	// Default offset from the character location for projectiles to spawn
-	GunOffset = FVector(100.0f, 0.0f, 10.0f);
+	//GunOffset = FVector(100.0f, 0.0f, 10.0f);
 }
 
 // Called when the game starts or when spawned
@@ -38,7 +39,7 @@ void ANPCharacter::BeginPlay()
 	
 
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
-	bool AttachmentDone = TP_Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+	//bool AttachmentDone = TP_Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 	/*if (!AttachmentDone)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Attachment was not done"));
@@ -46,44 +47,52 @@ void ANPCharacter::BeginPlay()
 
 	TP_Gun->SetVisibility(true);*/
 
-}
 
-void ANPCharacter::OnFire()
-{
-	// try and fire a projectile
-	if (ProjectileClass != NULL)
+	if (GunClass != NULL)
 	{
 		UWorld* const World = GetWorld();
 		if (World != NULL)
 		{
-			const FRotator SpawnRotation = GetControlRotation();
-			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-			const FVector SpawnLocation = ((TP_MuzzleLocation != nullptr) ? TP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
+			
+				const FRotator SpawnRotation = FRotator(0.f, 0.f, 0.f);
+				// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+				const FVector SpawnLocation = FVector(0.f, 0.f, 0.f);
 
-			//Set Spawn Collision Handling Override
-			FActorSpawnParameters ActorSpawnParams;
-			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+				//Set Spawn Collision Handling Override
+				FActorSpawnParameters ActorSpawnParams;
+				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-			// spawn the projectile at the muzzle
-			World->SpawnActor<AWeaponProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+				// spawn the projectile at the muzzle
+				TP_Gun = World->SpawnActor<AGunBase>(GunClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 			
 		}
 	}
-
-	// try and play the sound if specified
-	if (FireSound != NULL)
+	if (TP_Gun)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+		//Attach gun actor to Skeleton, doing it here because the skeleton is not yet created in the constructor
+		TP_Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+		TP_Gun->SetPawnOwner(this);
 	}
+		
+}
 
-	// try and play a firing animation if specified
-	if (FireAnimation != NULL)
+void ANPCharacter::OnFire()
+{
+	if (TP_Gun)
 	{
-		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-		if (AnimInstance != NULL)
+		bool WasShoot = TP_Gun->OnFire();
+		if (WasShoot)
 		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
+			// try and play a firing animation if specified
+			//if (FireAnimation != NULL)
+			//{
+			//	// Get the animation object for the arms mesh
+			//	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();	//????
+			//	if (AnimInstance != NULL)
+			//	{
+			//		AnimInstance->Montage_Play(FireAnimation, 1.f);
+			//	}
+			//}
 		}
 	}
 }
